@@ -1,0 +1,14 @@
+# Imagen base.
+FROM mysql:latest
+
+# Variables de entorno.
+ENV MYSQL_ROOT_PASSWORD=root
+ENV MYSQL_DATABASE=mydatabase
+ENV MYSQL_USER=user
+ENV MYSQL_PASSWORD=password
+
+# Script de inicialización de la base de datos.(Archivo de inicializacion "init.sql")
+COPY init.sql /docker-entrypoint-initdb.d/
+
+# Puerto expuesto.
+EXPOSE 3306
