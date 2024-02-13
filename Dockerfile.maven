@@ -1,0 +1,35 @@
+# Primera etapa: compilar y ejecutar pruebas
+FROM maven:3.6.3-openjdk-11 AS builder
+
+# Copiar los archivos de la aplicación
+COPY . /app
+
+# Cambiar al directorio de la aplicación
+WORKDIR /app
+
+# Compilar y ejecutar las pruebas
+RUN mvn clean test
+
+# Segunda etapa: construir la aplicación
+FROM maven:3.6.3-openjdk-11 AS final
+
+# Copiar los archivos de la primera etapa
+COPY --from=builder /app /app
+
+# Cambiar al directorio de la aplicación
+WORKDIR /app
+
+# Empaquetar la aplicación
+RUN mvn clean package
+
+# Etapa final: ejecutar la aplicación
+FROM openjdk:11-jre-slim
+
+# Copiar el artefacto de la aplicación compilada
+COPY --from=final /app/target/TechhubApplication.jar /app/app.jar
+
+# Exponer el puerto de la aplicación
+EXPOSE 8080
+
+# Comando para ejecutar la aplicación
+CMD ["java", "-jar", "/app/app.jar"]
